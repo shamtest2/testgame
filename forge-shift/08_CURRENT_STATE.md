@@ -10,8 +10,8 @@ It must remain small.
 # Project Status
 
 Phase: PRE-BUILD
-Current task: TASK-001
-Last completed task: TASK-000
+Current task: TASK-002
+Last completed task: TASK-001
 
 # Product
 
@@ -44,6 +44,7 @@ NOT YET VERIFIED
 
 Cline:
 VERIFIED - TASK-000 completed
+VERIFIED - TASK-001 completed
 
 Context:
 Target 64K if the actual machine can sustain it.
@@ -57,6 +58,14 @@ PROJECT SCAFFOLD COMPLETE
 - src/main.ts created (Three.js basic setup)
 - build successful with zero errors
 
+TASK-001: CORE 3D SCENE IMPLEMENTED
+- Three.js scene with PerspectiveCamera looking at center
+- Dark background (#0a0a0f)
+- Directional and ambient lights
+- Grey box in center (BoxGeometry) as placeholder
+- OrbitControls for camera rotation
+- Render loop using requestAnimationFrame
+
 # Known Risks
 
 1. Free Colab reliability/policy for the intended remote-agent architecture must be verified.
@@ -66,8 +75,8 @@ PROJECT SCAFFOLD COMPLETE
 
 # Next Action
 
-Complete TASK-001:
-Verify the actual Cline → model → runtime → browser development pipeline.
+Complete TASK-002:
+Implement architectural reconfiguration system with modular components
 
 # Handoff Rule
 
