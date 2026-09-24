@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Player } from './player';
 import { World } from './world';
 import { ShiftNode } from './shift-node';
+import { CameraController } from './camera';
 
 // Create scene
 const scene = new THREE.Scene();
@@ -90,6 +91,9 @@ window.addEventListener('click', (event) => {
   }
 });
 
+// Create camera controller
+const cameraController = new CameraController(camera, new THREE.Vector3(0, 5, 10));
+
 // Render loop
 const clock = new THREE.Clock();
 
@@ -113,10 +117,8 @@ function animate() {
     node.update(delta);
   });
   
-  // Move camera behind player with offset
-  const cameraOffset = new THREE.Vector3(0, 5, 10);
-  camera.position.copy(player.getPosition()).add(cameraOffset);
-  camera.lookAt(player.getPosition());
+  // Update camera using controller
+  cameraController.update(player.getPosition());
   
   renderer.render(scene, camera);
 }

@@ -3,15 +3,19 @@ import { Player } from './player';
 
 export class ShiftNode {
     private mesh: THREE.Mesh;
+    private player: Player;
     private nodeActive: boolean = false;
+    private transformationEffect: THREE.Vector3;
     private rotationSpeed: number = 0.02;
     private glowIntensity: number = 0.8;
     private ringMesh: THREE.Mesh;
     private transformableObjects: THREE.Object3D[] = [];
-    private transformationStarted: boolean = false;
-    private transformationProgress: number = 0;
+    private transformType: 'bridge' | 'wall' | 'platform' | null = null;
     
-    constructor(_: Player, position: THREE.Vector3) {
+    constructor(player: Player, position: THREE.Vector3) {
+        this.player = player;
+        this.originalPosition = position.clone();
+        
         // Create a glowing orb as the shift node
         const geometry = new THREE.SphereGeometry(1.5, 32, 32);
         const material = new THREE.MeshStandardMaterial({ 
@@ -40,6 +44,9 @@ export class ShiftNode {
         this.ringMesh.rotation.x = Math.PI / 2;
         this.ringMesh.position.copy(position);
         this.ringMesh.castShadow = true;
+        
+        // Add the node and ring to a group for easier positioning
+        this.transformationEffect = new THREE.Vector3(0, 0, 0);
     }
     
     update(delta: number) {
@@ -116,15 +123,15 @@ export class ShiftNode {
         const distance = position.distanceTo(this.mesh.position);
         return distance < 5;
     }
-    
+
     // Add an object that can be transformed by this node
     addTransformableObject(obj: THREE.Object3D) {
         this.transformableObjects.push(obj);
     }
-    
+
     // Set the type of transformation to perform
-    setTransformationType(_: 'bridge' | 'wall' | 'platform') {
-        // Intentionally left unimplemented in this task scope
+    setTransformationType(type: 'bridge' | 'wall' | 'platform') {
+        this.transformType = type;
     }
     
     // Start the actual transformation process
@@ -138,11 +145,11 @@ export class ShiftNode {
             (this.ringMesh.material as THREE.MeshStandardMaterial).emissive.set(0xff00ff);
         }
     }
-    
+
     getTransformationProgress(): number {
         return this.transformationProgress;
     }
-    
+
     // Method to check if node is available for use (not active and not already used)
     isAvailable(): boolean {
         return !this.nodeActive && !this.transformationStarted;
