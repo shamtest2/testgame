@@ -47,6 +47,8 @@ const player = new Player(scene);
 
 // Add World instance
 const world = new World(scene, player);
+// World initialization clears the scene; restore the existing player afterward.
+scene.add(player.getMesh());
 
 // Create shift nodes for vertical slice development
 const shiftNodes: ShiftNode[] = [];
@@ -92,11 +94,12 @@ window.addEventListener('click', (event) => {
 
 // Render loop
 const clock = new THREE.Clock();
+const cameraOffset = new THREE.Vector3(0, 5, 10);
 
 function animate() {
   requestAnimationFrame(animate);
   
-  const delta = clock.getDelta();
+  const delta = Math.min(clock.getDelta(), 0.05);
   
   // Handle player movement based on keyboard input
   if (keys['w']) player.moveForward(delta);
@@ -109,12 +112,11 @@ function animate() {
   world.update();
   
   // Update all shift nodes
-  shiftNodes.forEach(node => {
+  for (const node of shiftNodes) {
     node.update(delta);
-  });
+  }
   
   // Move camera behind player with offset
-  const cameraOffset = new THREE.Vector3(0, 5, 10);
   camera.position.copy(player.getPosition()).add(cameraOffset);
   camera.lookAt(player.getPosition());
   
