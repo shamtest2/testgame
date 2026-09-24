@@ -18,7 +18,7 @@ export class Player {
     this.speed = 5;
   }
 
-  update(delta: number) {
+  update() {
     // Update player position with delta time for smooth movement
     // Movement will be handled by keyboard controls
   }

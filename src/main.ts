@@ -72,7 +72,7 @@ function animate() {
   if (keys['d']) player.moveRight(delta);
   
   // Update player
-  player.update(delta);
+  player.update();
   
   // Move camera behind player with offset
   const cameraOffset = new THREE.Vector3(0, 5, 10);
