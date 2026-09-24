@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Player } from './player';
+import { Clock } from 'three';
 
 // Create scene
 const scene = new THREE.Scene();
@@ -28,16 +29,26 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 1, 1);
 scene.add(directionalLight);
 
-// Create a simple grey box
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x808080 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// Add ground plane
+const groundGeometry = new THREE.PlaneGeometry(100, 100);
+const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a2e });
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
 
-// Add orbit controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
+// Add Player instance
+const player = new Player();
+
+// Add keyboard event listeners for WASD
+const keys: { [key: string]: boolean } = {};
+
+window.addEventListener('keydown', (event) => {
+  keys[event.key.toLowerCase()] = true;
+});
+
+window.addEventListener('keyup', (event) => {
+  keys[event.key.toLowerCase()] = false;
+});
 
 // Handle window resize
 window.addEventListener('resize', () => {
@@ -47,14 +58,27 @@ window.addEventListener('resize', () => {
 });
 
 // Render loop
+const clock = new Clock();
+
 function animate() {
   requestAnimationFrame(animate);
   
-  // Rotate the cube
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  const delta = clock.getDelta();
   
-  controls.update();
+  // Handle player movement based on keyboard input
+  if (keys['w']) player.moveForward(delta);
+  if (keys['s']) player.moveBackward(delta);
+  if (keys['a']) player.moveLeft(delta);
+  if (keys['d']) player.moveRight(delta);
+  
+  // Update player
+  player.update(delta);
+  
+  // Move camera behind player with offset
+  const cameraOffset = new THREE.Vector3(0, 5, 10);
+  camera.position.copy(player.getPosition()).add(cameraOffset);
+  camera.lookAt(player.getPosition());
+  
   renderer.render(scene, camera);
 }
 
