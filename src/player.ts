@@ -9,11 +9,14 @@ export class Player {
     const geometry = new THREE.CapsuleGeometry(0.5, 1, 4, 8);
     const material = new THREE.MeshStandardMaterial({ 
       color: 0x00ffff,
-      wireframe: false
+      wireframe: false,
+      roughness: 0.3,
+      metalness: 0.7
     });
     
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.y = 1; // Position it upright
+    this.mesh.castShadow = true;
     
     // Add the mesh to the scene
     scene.add(this.mesh);
