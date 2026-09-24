@@ -7,6 +7,8 @@ export class ShiftNode {
     private nodeActive: boolean = false;
     private transformationEffect: THREE.Vector3;
     private rotationSpeed: number = 0.02;
+    private glowIntensity: number = 0.8;
+    private ringMesh: THREE.Mesh;
     
     constructor(player: Player, position: THREE.Vector3) {
         this.player = player;
@@ -16,7 +18,7 @@ export class ShiftNode {
         const material = new THREE.MeshStandardMaterial({ 
             color: 0x00ffff,
             emissive: 0x0088ff,
-            emissiveIntensity: 0.8,
+            emissiveIntensity: this.glowIntensity,
             transparent: true,
             opacity: 0.7
         });
@@ -25,7 +27,7 @@ export class ShiftNode {
         this.mesh.position.copy(position);
         this.mesh.castShadow = true;
         
-        // Add a ring around the shift node for visual effect
+        // Create a ring around the shift node for visual effect
         const ringGeometry = new THREE.RingGeometry(1.8, 2.2, 32);
         const ringMaterial = new THREE.MeshStandardMaterial({ 
             color: 0x00aaff,
@@ -35,10 +37,10 @@ export class ShiftNode {
             transparent: true,
             opacity: 0.6
         });
-        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-        ring.rotation.x = Math.PI / 2;
-        ring.position.copy(position);
-        ring.castShadow = true;
+        this.ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
+        this.ringMesh.rotation.x = Math.PI / 2;
+        this.ringMesh.position.copy(position);
+        this.ringMesh.castShadow = true;
         
         // Add the node and ring to a group for easier positioning
         this.transformationEffect = new THREE.Vector3(0, 0, 0);
@@ -46,15 +48,24 @@ export class ShiftNode {
     
     update(delta: number) {
         if (this.nodeActive) {
-            // Create a subtle pulsing effect when active
-            const pulse = Math.sin(Date.now() * 0.005) * 0.2 + 0.8;
+            // Create a more pronounced pulsing effect when active
+            const pulse = Math.sin(Date.now() * 0.008) * 0.3 + 0.85;
             this.mesh.scale.set(pulse, pulse, pulse);
             
-            // Rotate the node and ring around the Y-axis
-            this.mesh.rotation.y += this.rotationSpeed;
+            // Increase glow intensity and make it pulsate
+            const glowPulse = Math.sin(Date.now() * 0.005) * 0.2 + 0.8;
+            (this.mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = this.glowIntensity * glowPulse;
+            
+            // Make ring pulse with node  
+            const ringPulse = Math.sin(Date.now() * 0.007) * 0.3 + 0.7;
+            (this.ringMesh.material as THREE.MeshStandardMaterial).opacity = ringPulse;
+            
+            // Rotate the node and ring around the Y-axis faster when active
+            this.mesh.rotation.y += this.rotationSpeed * 2;
         } else {
             // Slowly rotate when inactive  
-            this.mesh.rotation.y += 0.005;
+            this.mesh.rotation.y += this.rotationSpeed;
+            this.ringMesh.rotation.y += this.rotationSpeed;
         }
         
         // Update transformation effect if active
@@ -68,12 +79,19 @@ export class ShiftNode {
         return this.mesh;
     }
     
+    getRingMesh(): THREE.Mesh {
+        return this.ringMesh;
+    }
+    
     activate() {
         this.nodeActive = true;
     }
     
     deactivate() {
         this.nodeActive = false;
+        // Reset the glow to original strength
+        (this.mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = this.glowIntensity;
+        (this.ringMesh.material as THREE.MeshStandardMaterial).opacity = 0.6;
     }
     
     isActive(): boolean {

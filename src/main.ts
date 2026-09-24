@@ -61,6 +61,7 @@ const nodePositions = [
 nodePositions.forEach(position => {
   const node = new ShiftNode(player, position);
   scene.add(node.getMesh());
+  scene.add(node.getRingMesh()); // Also add the ring mesh
   shiftNodes.push(node);
 });
 
