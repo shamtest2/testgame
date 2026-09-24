@@ -37,7 +37,7 @@ ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
 // Add Player instance
-const player = new Player();
+const player = new Player(scene);
 
 // Add keyboard event listeners for WASD
 const keys: { [key: string]: boolean } = {};
@@ -65,14 +65,14 @@ function animate() {
   
   const delta = clock.getDelta();
   
-  // Handle player movement based on keyboard input
-  if (keys['w']) player.moveForward(delta);
-  if (keys['s']) player.moveBackward(delta);
-  if (keys['a']) player.moveLeft(delta);
-  if (keys['d']) player.moveRight(delta);
-  
-   // Update player
-   player.update();
+// Handle player movement based on keyboard input
+   if (keys['w']) player.moveForward(delta);
+   if (keys['s']) player.moveBackward(delta);
+   if (keys['a']) player.moveLeft(delta);
+   if (keys['d']) player.moveRight(delta);
+   
+    // Update player
+    player.update(delta);
   
   // Move camera behind player with offset
   const cameraOffset = new THREE.Vector3(0, 5, 10);
